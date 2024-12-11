@@ -46,7 +46,7 @@ INSTALLED_APPS = [
 ]
 
 # ASGI configuration
-ASGI_APPLICATION = "soulthread.asgi.application"
+#ASGI_APPLICATION = "soulthread.asgi.application"
 
 AUTH_USER_MODEL = 'chat.User'
 
@@ -61,11 +61,11 @@ DATABASES = {
     }
 }
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
-    },
-}
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels.layers.InMemoryChannelLayer",
+#     },
+# }
 
 
 REST_FRAMEWORK = {

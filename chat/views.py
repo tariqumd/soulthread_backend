@@ -8,6 +8,10 @@ from chat.serializers import MessageSerializer, LoginSerializer, RegistrationSer
 from rest_framework import status
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from transformers import pipeline
+
+# Load the pre-trained model from Hugging Face (or another model you prefer)
+model = pipeline('text-generation', model="facebook/blenderbot-400M-distill")
 
 User = get_user_model()  # Get the custom user model
 
@@ -69,6 +73,28 @@ class MessageList(APIView):
             serializer.save(sender=request.user)
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
+
+class ChatView(APIView):
+    def post(self, request):
+        # Get the user's message from the request
+        user_message = request.data.get("message")
+
+        if not user_message:
+            return Response({"error": "No message provided"}, status=400)
+
+        # Generate a response using the model
+        # Set truncation=True explicitly to ensure long inputs are truncated
+        response = model(user_message, 
+                          max_length=1000, 
+                          pad_token_id=50256, 
+                          truncation=True)  # Explicit truncation
+
+        # Extract the text from the response (DialoGPT generates a list of dictionaries)
+        print("response", response)
+        bot_reply = response[0]['generated_text']
+
+        # Send the bot's reply as a response
+        return Response({"reply": bot_reply})
 
 class LogoutView(APIView):
     def post(self, request):
