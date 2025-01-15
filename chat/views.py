@@ -8,10 +8,25 @@ from chat.serializers import MessageSerializer, LoginSerializer, RegistrationSer
 from rest_framework import status
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from transformers import pipeline
+from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
+import gc
+import torch
+
+
+
+# Load model directly
+
+#tokenizer = AutoTokenizer.from_pretrained("mradermacher/tinyllama-therapy-bot-v1-GGUF")
+#model = AutoModelForCausalLM.from_pretrained("mradermacher/tinyllama-therapy-bot-v1-GGUF")
 
 # Load the pre-trained model from Hugging Face (or another model you prefer)
-model = pipeline('text-generation', model="facebook/blenderbot-400M-distill")
+#model = pipeline('text-generation', model=model, tokenizer=tokenizer)
+
+# model = pipeline('text-generation', model="victunes/TherapyLlama-8B-v1", device_map="auto",
+#                 offload_folder="./offload", load_in_8bit=True)
+
+model = pipeline('text-generation', model="distilbert/distilgpt2")
+
 
 User = get_user_model()  # Get the custom user model
 
@@ -92,7 +107,7 @@ class ChatView(APIView):
         # Extract the text from the response (DialoGPT generates a list of dictionaries)
         print("response", response)
         bot_reply = response[0]['generated_text']
-
+        gc.collect()
         # Send the bot's reply as a response
         return Response({"reply": bot_reply})
 
