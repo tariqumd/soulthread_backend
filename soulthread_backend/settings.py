@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-
+from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'channels',  # For WebSocket support,
     'rest_framework_simplejwt.token_blacklist',
 ]
-
 # ASGI configuration
 #ASGI_APPLICATION = "soulthread.asgi.application"
 
@@ -61,6 +60,16 @@ DATABASES = {
     }
 }
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=365),  # Make this a very long duration
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=365),  # Optionally match or extend this duration
+    'ROTATE_REFRESH_TOKENS': False,  # To avoid issuing a new refresh token each time
+    'BLACKLIST_AFTER_ROTATION': True,  # Ensure tokens are invalidated upon logout
+}
 # CHANNEL_LAYERS = {
 #     "default": {
 #         "BACKEND": "channels.layers.InMemoryChannelLayer",
